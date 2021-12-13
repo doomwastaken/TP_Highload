@@ -45,17 +45,12 @@ As a result we have following statistics:
 
 ### RPS depending on request type
 Users:
-* Calculating route ~ 
-* Order taxi ~ 
-* Check taxi location ~ 
-* Rating driver ~ 
-* Cancelling order ~ 
-* Changing destination ~ 
+  For average user within 15 000 000 users we expect to do 10 rides, on 12 "active" hours, so 15 000 000 / ( 3 * 12 * 3600 ) = 115 rps, with extra checks and accounting for spikes, we expect 115 * 2 * 2  = 460 rps (for big events, celebrations and weather conditions)
+
 Drivers:
-* Shift start ~ 
-* Receiving orders ~ 
-* Updating driver coordinatest ~ 
-* Shift end ~ 
+  Stats are negligable compared to users, given 100 000 active drivers, however we expect much heavier traffic, so we expect another 150 rps for monitoring drivers and additional services.
+  
+Total of 600 rps.
 
 ### Traffic:
 Overall traffic can be calculated by stats above, however we will have to account for time of day and will be calculating at peak hours.
@@ -110,40 +105,40 @@ Load for the balancer is X requests per second. Based on [perfomance tests](http
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 16         |           |           |
+| 32        | 16         |           |     2      |
 
 2) For message broker we will require. [Info](https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines)
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 16        | 32         | 500       |           |
+| 16        | 32         | 500       |   2       |
 
 3) Geolocation service
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |           |
+| 32        | 32         | 500       |   4       |
 
 4) Orders and active orders
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |           |
+| 32        | 32         | 500       |  10       |
 
 5) Backend / gateway service
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |           |
+| 32        | 32         | 500       |  2        |
 
 6) Database with driver data
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |           |
+| 32        | 32         | 500       | 4         |
 
-7) Database with legacy location data / user location data (previous locations, destinations)
+7) Database with legacy location data / user location data (previous locations, destinations) edit: uncertain about number, need consultation
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 5000      |           |
+| 32        | 32         | 5000      | 4         |
