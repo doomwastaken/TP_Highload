@@ -1,7 +1,7 @@
 # TP_Highload
 Highload service example, nation wide taxi service MVP
 
-Data taken from yandex research from 2012, 2015 and their blogs from 2016-2020, some data is calculated manually.
+Data taken from yandex research from 2012, 2015 and their blogs from 2016-2021, some data is calculated manually.
 
 Disclaimer: This is meant to be an educational project in order to get knowledge in fields of analytics, system design and extending my knowledge of python (and yes I am aware that C/C++/Rust even GO would be preferable, however I am famillar with those already :)).
 
@@ -9,7 +9,7 @@ Disclaimer: This is meant to be an educational project in order to get knowledge
 
 - Russian federation: Large cities (over 1 million population) and expanding into smaller citiest afterwards
 - Active users: 15 million. With more than 10 rides a month, 40 million accounting semi-regular users.
-- Age: 18-60
+- Age: 18-65 (working population)
 - Additional revenue streams: Deliveries
 - Drivers: 100 thousand. Including part time drivers
 
@@ -61,6 +61,7 @@ Drivers:
 Overall traffic can be calculated by stats above, however we will have to account for time of day and will be calculating at peak hours.
 
 ## 4. Logical schema
+![schema](https://i.imgur.com/wPecXKn.png)
 
 ## 5. Physical schema
 
