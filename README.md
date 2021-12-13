@@ -102,6 +102,7 @@ We believe in automation so in order to see the stability of system, we will req
 As a part of QA, CI/CD / documentation services will be implemented. P.S. based on amount of data here, you could guess that I love QA <3
 
 ## 7. Project scheme
+![project](https://i.imgur.com/BeB61G1.png)
 
 ## 8. Hardware
 1) Hardware for load balancer.
