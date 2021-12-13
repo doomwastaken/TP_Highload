@@ -55,6 +55,9 @@ Total of 600 rps.
 ### Traffic:
 Overall traffic can be calculated by stats above, however we will have to account for time of day and will be calculating at peak hours.
 
+### Calculation method 2:
+If we consider that most people use taxi services to go to and from work, we may expect much higher density of orders, time calculations and order cancellations, aswell as higher amount of working taxi drivers. My assumption would be atleast 4x density of orders and as much as 10x increase in traffic during 7:30am-9:30am and 4:30pm and 7:00pm hours, to a total of 6000 rps for that scenario 
+
 ## 4. Logical schema
 ![schema](https://i.imgur.com/wPecXKn.png)
 
@@ -123,7 +126,7 @@ Load for the balancer is X requests per second. Based on [perfomance tests](http
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |  10       |
+| 32        | 32         | 500       |  12       |
 
 5) Backend / gateway service
 
