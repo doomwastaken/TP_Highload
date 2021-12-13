@@ -130,7 +130,7 @@ Load for the balancer is X requests per second. Based on [perfomance tests](http
 
 5) Backend / gateway service
 
-| CPU, Ядра |  RAM, Гб   |  SSD, Гб  |число машин|
+| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
 | 32        | 32         | 500       |           |
 
