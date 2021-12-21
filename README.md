@@ -71,10 +71,10 @@ We will be splitting user / app data in following ways:
 Postgres was chosen due to reliability and ease of data replication, due to value of user data. Redis chosen for session data for perfomance reasons.
 
 We expect each shard to be able to hold ~15k RPS, which means that we require following amount of shards per region:
-- Moscow 1 shards
-- Saint Petersburg 1 shards
-- Central Russia 1 shards
-- South Russia 1 shards
+- Moscow 1 shard
+- Saint Petersburg 1 shard
+- Central Russia 1 shard
+- South Russia 1 shard
 
 As you could see data center were chose based on geographical principle.
 
@@ -117,6 +117,7 @@ Total traffic would be 3 000 000b + 32 000b + 64 000b + 12 000b + 600 000b = 3.7
 
 1) Hardware for load balancer.
 Load for the balancer is X requests per second. Based on [perfomance tests](https://www.nginx.com/wp-content/uploads/2014/07/NGINX-SSL-Performance.pdf), Nginx with 8 cores can hold about 2k requests with SSL termination. So with 64 cores we can expect load of 16k RPS. In order to hold X requests per second we will need Y servers. For reliability reasons we will double the amount to Z. Drive is for the sole purpose of logs, however these days I would assume there would be some UDP based logger
+
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
 | 4         | 4          | 100(logs) |   1       |
