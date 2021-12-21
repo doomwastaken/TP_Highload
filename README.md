@@ -71,17 +71,17 @@ We will be splitting user / app data in following ways:
 Postgres was chosen due to reliability and ease of data replication, due to value of user data. Redis chosen for session data for perfomance reasons.
 
 We expect each shard to be able to hold ~15k RPS, which means that we require following amount of shards per region:
-- Moscow 6 shards
-- Saint Petersburg 3 shards
-- Western Russia 3 shards
-- Central Russia 2 shards
-- Eastern Russia 1 shard
-- South Russia 2 shards
-- Northern Russia 1 shard
+- Moscow 1 shards
+- Saint Petersburg 1 shards
+- Central Russia 1 shards
+- South Russia 1 shards
 
 As you could see data center were chose based on geographical principle.
 
-To ensure stability and fault resistance we will be keeping 2 replicas per database, in addition we will be storing hystorical data for data analysis and following goverment regulations. Scheme for replication is master - replica. 
+To ensure stability and fault resistance we will be keeping 2 replicas per database, in addition we will be storing hystorical data for data analysis and following goverment regulations. Scheme for replication will be following:
+* Writing all data to master
+* Copying data from master to 2 replicas per master in real time
+* Reading data only from replicas
 
 ## 6. Technologies
 Will be going with "default" stack of technologies
@@ -103,45 +103,58 @@ As a part of QA, CI/CD / documentation services will be implemented. P.S. based 
 ![project](https://i.imgur.com/BeB61G1.png)
 
 ## 8. Hardware
-1) Hardware for load balancer.
-Load for the balancer is X requests per second. Based on [perfomance tests](https://www.nginx.com/wp-content/uploads/2014/07/NGINX-SSL-Performance.pdf), Nginx with 8 cores can hold about 2k requests with SSL termination. So with 64 cores we can expect load of 16k RPS. In order to hold X requests per second we will need Y servers. For reliability reasons we will double the amount to Z. 
+With 6000 rps for our 15 000 000 potential users and 4 shards, I will assume that third to half of that activity will fall to Moscow region.
+Out of 3000 RPS, our split per update is: (location is 9b, longitude 4b + latitude 4b + satelites 1b)
+* 10 shares - calculating route - ID 4b + start location 9b + end location 9b + duration 4b + price 4b + time of taxi arrival 4b  + driver id 4b + name 4b * 32 + car number 4b * 9 = 202b + additional debug data + session ids etc - 300b
+* 1 share - order taxi = id + location + end location + time + class = 32b
+* 4 shares - check taxi location = id + time + location = 16b
+* 1 share - rating the driver = id + driver_id + rating = 12b
+* 1 share - other operations, such as cancel or changing destination = 600b (due to review text or new order calculation
 
+We assume driver traffic to be much lower and we will increase total traffic by 20% to accomodate for frequent location updates. Total amount of shares - 26 + 20% ~30 or 100rps per share, so we will be multiplying packet size by 100.
+
+Total traffic would be 3 000 000b + 32 000b + 64 000b + 12 000b + 600 000b = 3.7mb/s at peak, however we will need to account for protocols, packet loss, resending packets and additional info that we could be gathering from an app, it would be safe to assume 10mb/s or 864gb (100mb * 3600 * 24) a day, which can be easily managed through a standard 100gb lan at a datacenter. With upto double the amount to entire country traffic, however due to geographical position, size and different timezones that traffic will be spread throughout a day. 
+
+1) Hardware for load balancer.
+Load for the balancer is X requests per second. Based on [perfomance tests](https://www.nginx.com/wp-content/uploads/2014/07/NGINX-SSL-Performance.pdf), Nginx with 8 cores can hold about 2k requests with SSL termination. So with 64 cores we can expect load of 16k RPS. In order to hold X requests per second we will need Y servers. For reliability reasons we will double the amount to Z. Drive is for the sole purpose of logs, however these days I would assume there would be some UDP based logger
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 16         |           |     2      |
+| 4         | 4          | 100(logs) |   1       |
 
 2) For message broker we will require. [Info](https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines)
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 16        | 32         | 500       |   2       |
+| 8         | 16         | 500       |   1       |
 
 3) Geolocation service
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |   4       |
+| 8         | 16         | 100       |   1       |
 
 4) Orders and active orders
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |  12       |
+| 4         | 8          | 100       |  1        |
 
 5) Backend / gateway service
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       |  2        |
+| 8         | 8          | 100       |  1        |
 
 6) Database with driver data
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 500       | 4         |
+| 4         | 16         | 5000      | 2         |
 
-7) Database with legacy location data / user location data (previous locations, destinations) edit: uncertain about number, need consultation
+7) Database with legacy location data / user location data (previous locations, destinations)
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 32        | 32         | 5000      | 4         |
+| 4         | 4          | 5000      | 4         |
+
+We are talking total of 10 machines, with total of 56 cores, we can safely duplicate that per shard without increasing our maintenance cost.
