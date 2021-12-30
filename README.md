@@ -120,42 +120,49 @@ Load for the balancer is X requests per second. Based on [perfomance tests](http
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 4         | 4          | 100(logs) |   1       |
+| 4         | 4          | 100(logs) |   2       |
 
-2) For message broker we will require. [Info](https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines)
-
-| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
-|-----------| -----------|-----------|-----------|
-| 8         | 16         | 500       |   1       |
-
-3) Geolocation service
+2) Authorization service. 
+We consider that authorization for users will be done per shard, service itself will have a hosted database + replica for safe keeping. We will be keeping ready backup server up at all times and up to date. 
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 8         | 16         | 100       |   1       |
+| 64        | 32         | 1000      |   2       |
 
-4) Orders and active orders
-
-| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
-|-----------| -----------|-----------|-----------|
-| 4         | 8          | 100       |  1        |
-
-5) Backend / gateway service
+3) For message broker we will require. [Info](https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines)
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 8         | 8          | 100       |  1        |
+| 8         | 16         | 500       |   2       |
 
-6) Database with driver data
-
-| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
-|-----------| -----------|-----------|-----------|
-| 4         | 16         | 5000      | 2         |
-
-7) Database with legacy location data / user location data (previous locations, destinations)
+4) Geolocation service
 
 | CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
 |-----------| -----------|-----------|-----------|
-| 4         | 4          | 5000      | 4         |
+| 8         | 16         | 100       |   2       |
 
-We are talking total of 10 machines, with total of 56 cores, we can safely duplicate that per shard without increasing our maintenance cost.
+5) Orders and active orders
+
+| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
+|-----------| -----------|-----------|-----------|
+| 4         | 8          | 100       |  2        |
+
+6) Backend / gateway service
+
+| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
+|-----------| -----------|-----------|-----------|
+| 8         | 8          | 100       |  2        |
+
+7) Database with driver data
+
+| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
+|-----------| -----------|-----------|-----------|
+| 4         | 16         | 5000      |  4        |
+
+8) Database with legacy location data / user location data (previous locations, destinations)
+
+| CPU, Cores|  RAM, Gb   |  SSD, Gb  | Servers   |
+|-----------| -----------|-----------|-----------|
+| 4         | 4          | 5000      |  8        |
+
+We are talking total of 24 machines, with total of 240 cores, we can safely duplicate that per shard without increasing our maintenance cost.
