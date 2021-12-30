@@ -78,10 +78,10 @@ We expect each shard to be able to hold ~15k RPS, which means that we require fo
 
 As you could see data center were chose based on geographical principle.
 
-To ensure stability and fault resistance we will be keeping 2 replicas per database, in addition we will be storing hystorical data for data analysis and following goverment regulations. Scheme for replication will be following:
+To ensure stability and fault resistance we will be keeping 2 (or more if we want to work with analytical data) replicas per database, in addition we will be storing hystorical data for data analysis and following goverment regulations. Scheme for replication will be following:
 * Writing all data to master
-* Copying data from master to 2 replicas per master in real time
-* Reading data only from replicas
+* Replicating data from master to replicas via built-in systems every 5 seconds. (Also we are able to do logical replication, by storing all the requests and locking database for individual ones, waiting for them to be complete, however that will severely increase latency)
+* Reading data only from replicas, replica can be swapped with master in events of downtime.
 
 ## 6. Technologies
 Will be going with "default" stack of technologies
